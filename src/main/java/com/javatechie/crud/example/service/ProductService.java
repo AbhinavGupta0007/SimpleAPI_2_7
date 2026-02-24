@@ -28,14 +28,20 @@ public class ProductService {
     }
 
     public Product getProductById(int id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id)
+                );
+
     }
 
     public Product getProductByName(String name) {
-        return repository.findByName(name);
+        return repository.findByName(name).orElseThrow(()->
+                new ProductNotFoundException("Product not found with name: " + name));
     }
 
     public String deleteProduct(int id) {
+        repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
         repository.deleteById(id);
         return "product removed !! " + id;
     }
