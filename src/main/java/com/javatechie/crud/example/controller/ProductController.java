@@ -3,8 +3,12 @@ package com.javatechie.crud.example.controller;
 import com.javatechie.crud.example.entity.Product;
 import com.javatechie.crud.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -46,5 +50,16 @@ public class ProductController {
     @DeleteMapping("/delete/{id}")
     public String deleteProduct(@PathVariable int id) {
         return service.deleteProduct(id);
+    }
+
+    @GetMapping("/products/csv")
+    public ResponseEntity<byte[]> downloadProductsCsv() {
+        String csvContent = service.generateProductsCsv();
+        byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=products.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csvBytes);
     }
 }
